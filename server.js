@@ -67,7 +67,7 @@ const opts = {
   FEED_FILE: env.TRANSCRIPT_FILE || path.join(DATA_DIR, 'transcript.jsonl'),
   readyGuard: env.ANA_READY_GUARD !== '0',
   autoConfigPane: env.ANA_AUTOCONFIG !== '0',         // apply alternate-screen off + fixed size on connect
-  SERVABLE: new Set(['dashboard.html', 'ana-logo.png']),
+  SERVABLE: new Set(['dashboard.html', 'ana-logo.png', 'quant.js']),
   defaultDoc: 'dashboard.html',
   testMode: !!env.ANA_TEST,
 };

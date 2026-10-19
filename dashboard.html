@@ -1199,6 +1199,66 @@ body.sys-mode .ws-combo { display: none; }
 }
 #filesStatus { margin: 8px 2px 0; font-size: 12px; color: var(--text-weak); white-space: pre-wrap; overflow-wrap: anywhere; }
 #filesStatus:empty { display: none; }
+
+/* ---------- 약물 정량(혈중 농도 mg/L): 표준물질 피크 면적 → 검량선 → 시료 역산 ---------- */
+#quantView .wrap { max-width: 1100px; }
+.q-btn { height: 38px; padding: 0 14px; border-radius: 999px; background: var(--surface); box-shadow: var(--sh-card); font-size: 13.5px; font-weight: 700; color: var(--text-sub); white-space: nowrap; }
+.q-btn:disabled { opacity: .45; cursor: default; }
+.q-head { flex-wrap: wrap; }
+.q-drop { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; padding: 44px 20px; border: 2px dashed var(--line); cursor: pointer; box-shadow: none; }
+.q-drop.over { border-color: var(--blue); background: var(--blue-weak); }
+.q-drop b { font-size: 15px; }
+.q-drop span { font-size: 13px; color: var(--text-weak); }
+.q-setup { padding: 14px 16px; margin-bottom: 12px; }
+.q-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 12px; }
+.q-fields label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: var(--text-weak); min-width: 0; }
+.q-fields select, .q-fields input { height: 34px; min-width: 0; border-radius: var(--r-xs); border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: inherit; font-size: 13.5px; padding: 0 8px; }
+.q-cal { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 16px; padding: 16px; margin-bottom: 12px; align-items: center; }
+@media (max-width: 720px) { .q-cal { grid-template-columns: 1fr; } }
+.q-eq .cap { font-size: 12px; font-weight: 700; color: var(--text-weak); }
+.q-eq .eq { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.q-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.q-stats div { background: var(--surface-2); border-radius: var(--r-sm); padding: 8px 10px; }
+.q-stats .n { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.q-stats .l { font-size: 11.5px; color: var(--text-weak); font-weight: 700; }
+.q-plot svg { width: 100%; height: auto; display: block; }
+.q-plot .ax { stroke: var(--line); }
+.q-plot .tk { fill: var(--text-weak); font-size: 10px; }
+.q-plot .fit { stroke: var(--blue); stroke-width: 1.6; }
+.q-plot .std { fill: var(--blue); }
+.q-plot .std.off { fill: var(--surface); stroke: var(--text-weak); stroke-width: 1.4; }
+.q-plot .smp { fill: var(--text-sub); }
+.q-legend { display: flex; gap: 14px; justify-content: flex-end; font-size: 11.5px; color: var(--text-weak); font-weight: 700; margin-top: 4px; }
+.q-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.q-h { font-size: 15px; font-weight: 800; margin: 18px 2px 8px; display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.q-h small { font-size: 12.5px; color: var(--text-weak); font-weight: 600; }
+.q-tbl { overflow-x: auto; }
+.q-tbl table { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.q-tbl th { text-align: left; font-size: 12px; color: var(--text-weak); font-weight: 700; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.q-tbl td { padding: 10px 12px; border-bottom: 1px solid var(--line-2); white-space: nowrap; }
+.q-tbl tr:last-child td { border-bottom: 0; }
+.q-tbl .r { text-align: right; }
+.q-tbl .big { font-weight: 800; font-size: 14.5px; }
+.q-tbl tr.off td:not(:first-child) { color: var(--text-weak); }
+.q-tbl input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); }
+.q-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+.q-tag.ok { background: var(--success-bg); color: var(--success); }
+.q-tag.bad { background: var(--danger-bg); color: var(--danger); }
+.q-tag.warn { background: var(--warm-bg); color: var(--warm-fg); }
+.q-err { background: var(--danger-bg); color: var(--danger); border-radius: var(--r-sm); padding: 10px 14px; font-size: 13.5px; font-weight: 700; margin-bottom: 12px; white-space: pre-line; }
+.q-note { font-size: 12.5px; color: var(--text-weak); margin: 8px 2px; }
+.q-tag.mute { background: var(--surface-2); color: var(--text-weak); }
+.q-tag + .q-tag { margin-left: 4px; }
+.q-sub { font-size: 11.5px; color: var(--text-weak); font-weight: 600; }
+.q-cellc { cursor: pointer; }
+.q-cellc .q-tag { margin-top: 3px; }
+.q-num { width: 84px; height: 32px; border-radius: var(--r-xs); border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: inherit; font-size: 13.5px; padding: 0 8px; text-align: right; font-variant-numeric: tabular-nums; }
+.q-all td { background: var(--surface-2); font-size: 12.5px; color: var(--text-weak); font-weight: 700; }
+.q-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 2px 12px; }
+.q-chips button { height: 34px; padding: 0 14px; border-radius: 999px; background: var(--surface); box-shadow: var(--sh-card); font-size: 13.5px; font-weight: 700; color: var(--text-sub); }
+.q-chips button.on { background: var(--text); color: var(--bg); }
+.q-h2 { font-size: 13.5px; margin-top: 14px; }
+#quantView [hidden] { display: none !important; }
 </style>
 <script>
 /* 계절·시간대 테마 — <style> 직후에서 돌려 첫 페인트 전에 속성을 심는다(색 깜빡임 방지).
@@ -1252,40 +1312,41 @@ body.sys-mode .ws-combo { display: none; }
     <div class="topnav-brand"><img src="/ana-logo.png" alt="ANA logo"><span class="bname">ANA</span></div>
     <!-- 영역 전환(PC) — 모바일에서는 하단 메뉴(.bottomnav)가 같은 일을 한다 -->
     <div class="seg modeseg" role="tablist" aria-label="Area">
-      <button data-area="ws" class="on" role="tab">Workspace</button><button data-area="collab" role="tab">Collaborate<span class="tbadge" data-collabbadge>0</span></button><button data-area="sys" role="tab">System<span class="tbadge" data-sysbadge>0</span></button>
+      <button data-area="ws" class="on" role="tab">워크스페이스</button><button data-area="collab" role="tab">협업<span class="tbadge" data-collabbadge>0</span></button><button data-area="sys" role="tab">시스템<span class="tbadge" data-sysbadge>0</span></button>
     </div>
     <div class="ws-combo" id="wsCombo">
       <button class="ws-btn" id="wsBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Workspace">
         <span class="wsn" id="wsName">Base Workspace</span><span class="caret">▼</span></button>
       <div class="ws-menu" id="wsMenu" hidden>
-        <div class="ws-label">Workspace</div>
+        <div class="ws-label">워크스페이스</div>
         <div class="ws-list" id="wsList" role="listbox" aria-label="Workspaces"></div>
-        <button class="ws-add" id="wsAddBtn">＋ Add workspace</button>
+        <button class="ws-add" id="wsAddBtn">＋ 워크스페이스 추가</button>
         <form class="ws-new" id="wsNew" hidden>
-          <input id="wsNewName" maxlength="60" placeholder="Workspace name" autocomplete="off" aria-label="New workspace name">
-          <button type="submit">Add</button>
+          <input id="wsNewName" maxlength="60" placeholder="워크스페이스 이름" autocomplete="off" aria-label="New workspace name">
+          <button type="submit">추가</button>
         </form>
         <div class="ws-err" id="wsErr" hidden></div>
       </div>
     </div>
     <div class="tabstrip">
-      <button class="tab on" data-view="todo" data-group="ws" role="tab" aria-selected="true">Tasks</button>
-      <button class="tab" data-view="schedule" data-group="ws" role="tab" aria-selected="false">Calendar</button>
-      <button class="tab" data-view="memo" data-group="ws" role="tab" aria-selected="false">Notes</button>
-      <button class="tab" data-view="evolve" data-group="collab" role="tab" aria-selected="false">Evolve<span class="tbadge" id="evoBadge">0</span></button>
-      <button class="tab" data-view="approvals" data-group="collab" role="tab" aria-selected="false">Approvals<span class="tbadge" id="apprBadge">0</span></button>
-      <button class="tab" data-view="requests" data-group="collab" role="tab" aria-selected="false">Requests<span class="tbadge" id="reqBadge">0</span></button>
-      <button class="tab" data-view="requirements" data-group="collab" role="tab" aria-selected="false">Requirements</button>
-      <button class="tab" data-view="files" data-group="sys" role="tab" aria-selected="false">Files</button>
-      <button class="tab" data-view="stats" data-group="sys" role="tab" aria-selected="false">Stats</button>
-      <button class="tab" data-view="relations" data-group="sys" role="tab" aria-selected="false">Relations</button>
-      <button class="tab" data-view="reliability" data-group="sys" role="tab" aria-selected="false">Trustworthiness</button>
-      <button class="tab" data-view="safety" data-group="sys" role="tab" aria-selected="false">Safety</button>
-      <button class="tab" data-view="security" data-group="sys" role="tab" aria-selected="false">Security</button>
-      <button class="tab" data-view="update" data-group="sys" role="tab" aria-selected="false">Update<span class="tbadge" id="updBadge">0</span></button>
+      <button class="tab on" data-view="todo" data-group="ws" role="tab" aria-selected="true">할일</button>
+      <button class="tab" data-view="schedule" data-group="ws" role="tab" aria-selected="false">일정</button>
+      <button class="tab" data-view="memo" data-group="ws" role="tab" aria-selected="false">메모</button>
+      <button class="tab" data-view="quant" data-group="ws" role="tab" aria-selected="false">약물 정량</button>
+      <button class="tab" data-view="evolve" data-group="collab" role="tab" aria-selected="false">진화<span class="tbadge" id="evoBadge">0</span></button>
+      <button class="tab" data-view="approvals" data-group="collab" role="tab" aria-selected="false">승인<span class="tbadge" id="apprBadge">0</span></button>
+      <button class="tab" data-view="requests" data-group="collab" role="tab" aria-selected="false">요청<span class="tbadge" id="reqBadge">0</span></button>
+      <button class="tab" data-view="requirements" data-group="collab" role="tab" aria-selected="false">요구사항</button>
+      <button class="tab" data-view="files" data-group="sys" role="tab" aria-selected="false">파일</button>
+      <button class="tab" data-view="stats" data-group="sys" role="tab" aria-selected="false">통계</button>
+      <button class="tab" data-view="relations" data-group="sys" role="tab" aria-selected="false">관계</button>
+      <button class="tab" data-view="reliability" data-group="sys" role="tab" aria-selected="false">신뢰성</button>
+      <button class="tab" data-view="safety" data-group="sys" role="tab" aria-selected="false">안전</button>
+      <button class="tab" data-view="security" data-group="sys" role="tab" aria-selected="false">보안</button>
+      <button class="tab" data-view="update" data-group="sys" role="tab" aria-selected="false">업데이트<span class="tbadge" id="updBadge">0</span></button>
     </div>
     <button id="modeToggle" class="mode-toggle" role="switch" aria-checked="false" aria-label="Chip mode">
-      <span class="knob"></span>Chip
+      <span class="knob"></span>칩
     </button>
     <button id="drawBtn" class="chip-scan draw-btn" aria-label="Draw on the screen and attach it to the chat" title="Draw on the screen — circle what you mean">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -1298,14 +1359,14 @@ body.sys-mode .ws-combo { display: none; }
   <div class="me-menu" id="meMenu" role="menu" hidden>
     <button id="menuEditInfo" role="menuitem">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Edit My Info</button>
+      내 정보 수정</button>
     <button id="menuSettings" role="menuitem">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Settings</button>
+      설정</button>
     <div class="mm-sep" role="separator"></div>
     <button id="menuLogout" role="menuitem">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      <span>Log out<span class="mm-hint" id="menuLogoutHint" hidden></span></span></button>
+      <span>로그아웃<span class="mm-hint" id="menuLogoutHint" hidden></span></span></button>
   </div>
 
   <!-- 할일 -->
@@ -1364,6 +1425,34 @@ body.sys-mode .ws-combo { display: none; }
         </div>
         <div class="memo-none" id="memoNone">Select a note, or add one with the ＋ button in the list</div>
       </div>
+    </div>
+  </div></section>
+
+  <!-- 약물 정량: 기기 결과(시료·성분·면적) → 내부표준 면적비 검량선 → 시료 혈중 농도(mg/L). 계산은 quant.js가 브라우저 안에서, 마지막 분석·표준 농도는 이 브라우저에 보관 -->
+  <section class="view" id="quantView" role="tabpanel"><div class="wrap">
+    <div class="sec-head q-head"><h2>약물 정량</h2><span class="cnt" id="qFile">혈중 농도 · mg/L</span><span class="sp"></span>
+      <button class="q-btn" id="qExport" disabled>결과 CSV</button>
+      <button class="add-btn" id="qUpload">＋ 엑셀 업로드</button>
+      <input id="qInput" type="file" accept=".xlsx,.csv,.tsv,.txt" hidden></div>
+    <label class="q-drop card" id="qDrop" for="qInput">
+      <b>기기 결과 엑셀(.xlsx) 또는 CSV를 끌어다 놓거나 눌러서 고르세요</b>
+      <span>한 행 = 한 주입의 한 성분 — 시료(SA) · 성분(Analyte) · 면적(Area) · RT. STD1–5는 표준물질, M은 블랭크, 이름 끝 숫자만 다른 시료(HB1·HB2·HB3)는 반복으로 묶습니다</span>
+    </label>
+    <div id="qBody" hidden>
+      <div class="q-setup card"><div class="q-fields" id="qMap"></div></div>
+      <h3 class="q-h">표준 농도 (mg/L) <small>표준물질 STD마다 이론 농도 — 입력값은 이 브라우저에 남아 다음 파일에도 쓰입니다</small></h3>
+      <div class="q-tbl card"><table id="qConc"></table></div>
+      <div class="q-err" id="qErr" hidden></div>
+      <h3 class="q-h">정량 결과 (mg/L) <small id="qMatMeta"></small></h3>
+      <div class="q-tbl card"><table id="qMatrix"></table></div>
+      <h3 class="q-h">성분별 상세</h3>
+      <div class="q-chips" id="qAnTabs" role="tablist" aria-label="성분"></div>
+      <div class="q-cal card" id="qCal"><div class="q-eq" id="qEq"></div><div class="q-plot" id="qPlot"></div></div>
+      <h3 class="q-h q-h2">표준물질 <small>체크를 풀면 검량선에서 뺍니다 · 정확도 기준 ±15 % (최저 농도 ±20 %)</small></h3>
+      <div class="q-tbl card"><table id="qStds"></table></div>
+      <h3 class="q-h q-h2">시료 주입별 <small id="qRunMeta"></small></h3>
+      <div class="q-tbl card"><table id="qRuns"></table></div>
+      <div class="q-note" id="qBlank"></div>
     </div>
   </div></section>
 
@@ -1557,9 +1646,9 @@ body.sys-mode .ws-combo { display: none; }
 </div>
 <!-- 하단 메뉴(모바일): Workspace = 할일·일정·메모 / System = 통계·요청·진화·관계 -->
 <nav class="bottomnav" aria-label="Area">
-  <button data-area="ws" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Workspace</button>
-  <button data-area="collab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Collaborate<span class="tbadge" data-collabbadge>0</span></button>
-  <button data-area="sys"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>System<span class="tbadge" data-sysbadge>0</span></button>
+  <button data-area="ws" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>워크스페이스</button>
+  <button data-area="collab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>협업<span class="tbadge" data-collabbadge>0</span></button>
+  <button data-area="sys"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>시스템<span class="tbadge" data-sysbadge>0</span></button>
 </nav>
 <!-- 모델 선택 시트(Claude Code 세션) — Claude 앱과 같은 모양 -->
 <div class="limit-pop" id="limitPop" role="status" hidden></div>
@@ -1647,6 +1736,7 @@ body.sys-mode .ws-combo { display: none; }
   <div class="modal-acts"><button class="cancel" data-close>Cancel</button><button class="save" id="eSave">Add</button></div>
 </div>
 
+<script src="/quant.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -2919,7 +3009,7 @@ function selectTab(b) {
     if (b.dataset.group && b.dataset.group !== appMode) applyArea(b.dataset.group);
     if ($('memoView').classList.contains('on') && b.dataset.view !== 'memo') cleanupEmptyMemos(); // 메모 탭 이탈 시 빈 메모 정리(진화 #3)
     document.querySelectorAll('.topnav .tab').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', String(on)); });
-    ['todo', 'schedule', 'memo', 'evolve', 'approvals', 'requests', 'requirements', 'stats', 'relations', 'reliability', 'safety', 'security', 'update', 'files'].forEach((v) => $(v + 'View').classList.toggle('on', b.dataset.view === v));
+    ['todo', 'schedule', 'memo', 'quant', 'evolve', 'approvals', 'requests', 'requirements', 'stats', 'relations', 'reliability', 'safety', 'security', 'update', 'files'].forEach((v) => $(v + 'View').classList.toggle('on', b.dataset.view === v));
     lastTab[appMode] = b.dataset.view;
     revealTab(b);
     try { localStorage.setItem('ana-area-tabs', JSON.stringify(lastTab)); } catch {}
@@ -2931,6 +3021,7 @@ function selectTab(b) {
     if (b.dataset.view === 'files') loadFiles(filesPath);
     if (b.dataset.view === 'stats') renderStats();
     if (b.dataset.view === 'relations') renderRelations();
+    if (b.dataset.view === 'quant' && typeof renderQuant === 'function') renderQuant();   // 첫 로드 때는 아래 정량 스크립트가 직접 그린다
 }
 document.querySelectorAll('.topnav .tab').forEach((b) => { b.onclick = () => selectTab(b); });
 // 고른 탭이 가려져 있으면 보이게 밀고, 양옆에 더 있는지 가장자리 흐림으로 알린다
@@ -4354,6 +4445,7 @@ function pageLocation() {
   if (view && view.id === 'scheduleView') parts.push(`calendar ${MONTHS[calM]} ${calY}, selected day ${selDate}`);
   if (view && view.id === 'memoView') { const n = notes.find((x) => x.id === memoSel); if (n) parts.push(`open note "${noteTitle(n)}" (${n.id})`); }
   if (view && view.id === 'statsView') parts.push(`stats view "${statSeg}"`);
+  if (view && view.id === 'quantView') parts.push(quantSummary());
   if (view) {
     const max = view.scrollHeight - view.clientHeight;
     parts.push(max > 0 ? `scrolled ${Math.round(view.scrollTop)}px of ${max}px (${Math.round((view.scrollTop / max) * 100)}%)` : 'no scroll');
@@ -4555,6 +4647,187 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', () =
    모든 선언이 끝난 뒤 실행한다. 위쪽에서 부르면 아직 초기화되지 않은 let을 건드려
    예외가 나고, 그 예외가 스크립트 나머지를 통째로 중단시킨다(=화면이 죽는다). */
 setMode((() => { try { return localStorage.getItem('ana-mode') === '1' ? 'ana' : 'normal'; } catch { return 'normal'; } })());
+</script>
+<script>
+/* ================= 약물 정량(혈중 농도 mg/L) ================= */
+// 기기 결과 엑셀 → 열 역할 추정 → 성분마다 내부표준 면적비 검량선(가중 최소제곱) → 시료 역산 → 반복 평균. 서버로 보내지 않는다.
+// 마지막 분석(원본 표·열 지정·내부표준·가중치·제외한 표준)은 localStorage('ana-quant'),
+// 표준 농도는 성분 이름별로 localStorage('ana-quant-conc')에 — 같은 검량 수준을 쓰는 다음 파일에도 그대로 채워진다.
+const QUANT_KEY = 'ana-quant', QCONC_KEY = 'ana-quant-conc';
+const Q_ROLES = [['sample', '시료 (SA)'], ['analyte', '성분 (Analyte)'], ['area', '면적 (Area)'], ['rt', 'RT (선택)']];
+let quant = null, quantRes = null, qConc = {};
+try { quant = JSON.parse(localStorage.getItem(QUANT_KEY) || 'null'); if (quant && !quant.map?.analyte && quant.map?.analyte !== 0) quant = null; } catch {}
+try { qConc = JSON.parse(localStorage.getItem(QCONC_KEY) || '{}') || {}; } catch {}
+const qRows = () => (quant ? quant.sheets[quant.sheet].rows : []);
+const qFmt = (v, d = 4) => (v == null || !isFinite(v) ? '–' : Math.abs(v) >= 1000 ? Math.round(v).toLocaleString() : Quant.sig(v, d));
+function quantSave() {
+  try { const s = JSON.stringify(quant); if (s.length < 3e6) localStorage.setItem(QUANT_KEY, s); } catch {}
+  try { localStorage.setItem(QCONC_KEY, JSON.stringify(qConc)); } catch {}
+}
+async function quantLoad(file) {
+  try {
+    const { sheets } = await Quant.readTable(file.name, new Uint8Array(await file.arrayBuffer()));
+    const sheet = Math.max(0, sheets.findIndex((s) => { const g = Quant.guessColumns(s.rows); return g.map.area >= 0 && g.map.analyte >= 0; }));
+    quant = { file: file.name, sheets, sheet, weighting: '1/x', is: null, exclude: {}, sel: '', ...Quant.guessColumns(sheets[sheet].rows) };
+    quantSave(); renderQuant();
+    const n = quantRes.runs.reduce((o, r) => (o[r.kind]++, o), { std: 0, sample: 0, blank: 0 });
+    toast(`${file.name} — 표준 ${n.std} · 시료 ${n.sample} · 블랭크 ${n.blank}회 주입`);
+  } catch (e) { toast(e.message || '파일을 읽지 못했습니다'); }
+}
+function quantPlot(r) {
+  const W = 340, H = 210, L = 44, R = 10, T = 10, B = 28;
+  const pts = r.stds.filter((s) => s.nominal > 0 && s.y != null).map((s) => ({ x: s.nominal, y: s.y, k: s.excluded ? 'std off' : 'std', n: s.run }));
+  for (const s of r.samples) if (s.conc != null && isFinite(s.conc)) pts.push({ x: s.conc, y: s.y, k: 'smp', n: s.run });
+  if (!pts.length) return '';
+  const xMax = Math.max(...pts.map((p) => p.x), 0) * 1.08 || 1, yMax = Math.max(...pts.map((p) => p.y), 0) * 1.08 || 1;
+  const xMin = Math.min(0, ...pts.map((p) => p.x)), yMin = Math.min(0, ...pts.map((p) => p.y));
+  const sx = (x) => L + ((x - xMin) / (xMax - xMin)) * (W - L - R), sy = (y) => H - B - ((y - yMin) / (yMax - yMin)) * (H - T - B);
+  const ticks = (lo, hi) => [0, 0.25, 0.5, 0.75, 1].map((f) => lo + (hi - lo) * f);
+  let g = `<line class="ax" x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}"/><line class="ax" x1="${L}" y1="${T}" x2="${L}" y2="${H - B}"/>`;
+  for (const t of ticks(xMin, xMax)) g += `<text class="tk" x="${sx(t)}" y="${H - B + 14}" text-anchor="middle">${qFmt(t, 2)}</text>`;
+  for (const t of ticks(yMin, yMax)) g += `<text class="tk" x="${L - 5}" y="${sy(t) + 3}" text-anchor="end">${qFmt(t, 2)}</text>`;
+  g += `<text class="tk" x="${W - R}" y="${H - 2}" text-anchor="end">농도 mg/L</text>`;
+  if (r.fit) g += `<line class="fit" x1="${sx(xMin)}" y1="${sy(r.fit.slope * xMin + r.fit.intercept)}" x2="${sx(xMax)}" y2="${sy(r.fit.slope * xMax + r.fit.intercept)}"/>`;
+  for (const p of pts) {
+    const t = `<title>${escapeHtml(p.n)} · ${qFmt(p.x)} mg/L · ${qFmt(p.y, 6)}</title>`;
+    g += p.k === 'smp' ? `<rect class="smp" x="${sx(p.x) - 4}" y="${sy(p.y) - 4}" width="8" height="8" transform="rotate(45 ${sx(p.x)} ${sy(p.y)})">${t}</rect>`
+      : `<circle class="${p.k}" cx="${sx(p.x)}" cy="${sy(p.y)}" r="4.5">${t}</circle>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${escapeHtml(r.name)} 검량선 그래프">${g}</svg>
+    <div class="q-legend"><span><i style="background:var(--blue)"></i>표준물질</span><span><i style="background:var(--text-sub);border-radius:2px;transform:rotate(45deg)"></i>시료</span></div>`;
+}
+const qTag = (flag) => (!flag ? '' : `<span class="q-tag ${flag === '>ULOQ' ? 'warn' : flag === 'ND' ? 'mute' : 'bad'}">${escapeHtml(flag === '>ULOQ' ? 'ULOQ 초과' : flag === '<LLOQ' ? 'LLOQ 미만' : flag === 'ND' ? '불검출' : flag)}</span>`);
+function renderQuant() {
+  const has = !!quant;
+  $('qDrop').hidden = has; $('qBody').hidden = !has; $('qExport').disabled = true;
+  if (!has) { $('qFile').textContent = '혈중 농도 · mg/L'; quantRes = null; return; }
+  $('qFile').textContent = quant.file;
+  const rows = qRows(), cols = (rows[quant.header] || []).map((c, i) => String(c ?? '').trim() || `열 ${i + 1}`);
+  const res = quantRes = Quant.analyze(rows, { ...quant, conc: qConc });
+  const opt = (v, cur, label) => `<option value="${escapeHtml(String(v))}"${String(v) === String(cur) ? ' selected' : ''}>${escapeHtml(label)}</option>`;
+  $('qMap').innerHTML =
+    (quant.sheets.length > 1 ? `<label>시트<select data-q="sheet">${quant.sheets.map((s, i) => opt(i, quant.sheet, s.name)).join('')}</select></label>` : '') +
+    `<label>머리글 행<select data-q="header">${Array.from({ length: Math.min(rows.length, 20) }, (_, i) => opt(i, quant.header, `${i + 1}행 · ${(rows[i] || []).filter((c) => c !== '').slice(0, 3).join(', ').slice(0, 28)}`)).join('')}</select></label>` +
+    Q_ROLES.map(([k, l]) => `<label>${l}<select data-q="map.${k}">${opt(-1, quant.map[k], '— 없음 —')}${cols.map((c, i) => opt(i, quant.map[k], c)).join('')}</select></label>`).join('') +
+    `<label>내부표준<select data-q="is">${opt('', res.is, '— 없음 (면적 그대로) —')}${res.analytes.map((a) => opt(a.name, res.is, a.name)).join('')}</select></label>` +
+    `<label>가중치<select data-q="weighting">${opt('1/x', quant.weighting, '1/x (기본)')}${opt('1/x2', quant.weighting, '1/x²')}${opt('none', quant.weighting, '없음 (1)')}</select></label>`;
+
+  const names = Object.keys(res.results);
+  // 표준 농도 입력표: 첫 줄은 "전체" — 같은 수준을 모든 성분에 한 번에 채운다
+  const lv = res.levels;
+  const cin = (an, l) => `<input class="q-num" type="text" inputmode="decimal" data-qc="${escapeHtml(an)}" data-lv="${l}" value="${escapeHtml(String((qConc[an] || {})[l] ?? ''))}" placeholder="mg/L" aria-label="${escapeHtml(an)} STD${l} 농도">`;
+  $('qConc').innerHTML = lv.length ? `<thead><tr><th>성분</th>${lv.map((l) => `<th class="r">STD${l}</th>`).join('')}</tr></thead><tbody>
+    <tr class="q-all"><td>전체에 같은 값</td>${lv.map((l) => `<td class="r"><input class="q-num" type="text" inputmode="decimal" data-qall="${l}" placeholder="한 번에" aria-label="모든 성분 STD${l} 농도"></td>`).join('')}</tr>
+    ${names.map((n) => `<tr><td>${escapeHtml(n)}${res.results[n].detected ? '' : ' <span class="q-tag mute">불검출</span>'}</td>${lv.map((l) => `<td class="r">${cin(n, l)}</td>`).join('')}</tr>`).join('')}</tbody>`
+    : '<tbody><tr><td class="empty">STD1, STD2 … 이름의 표준물질 주입을 찾지 못했습니다</td></tr></tbody>';
+
+  const errs = [];
+  if (quant.map.sample < 0 || quant.map.analyte < 0 || quant.map.area < 0) errs.push('시료 · 성분 · 면적 열을 모두 골라 주세요.');
+  else if (!lv.length) errs.push('표준물질(STD1 … STD5) 주입이 없습니다 — 시료 열의 이름을 확인해 주세요.');
+  const need = names.filter((n) => res.results[n].detected && res.results[n].missingConc.length);
+  if (need.length) errs.push(`표준 농도를 입력해 주세요: ${need.map((n) => `${n}(STD${res.results[n].missingConc.join('·')})`).join(', ')}`);
+  if (!res.is) errs.push('내부표준이 지정되지 않아 면적 그대로 계산합니다.');
+  $('qErr').hidden = !errs.length; $('qErr').textContent = errs.join('\n');
+
+  // 결과 표: 시료(반복 묶음) × 성분
+  const groups = [];
+  for (const n of names) for (const g of res.results[n].groups) if (!groups.includes(g.name)) groups.push(g.name);
+  const cell = (n, gname) => {
+    const r = res.results[n], g = r.groups.find((x) => x.name === gname);
+    if (!g) return '<td></td>';
+    if (g.mean == null) return `<td class="r q-cellc" data-qan="${escapeHtml(n)}">${g.flag ? qTag(g.flag) : '<b class="big">–</b><div class="q-sub">표준 농도 입력 필요</div>'}</td>`;
+    const val = r.fit ? `<b class="big">${qFmt(g.mean)}</b>` : '<b class="big">–</b>';
+    const sub = r.fit ? `${g.runs.length > 1 ? `n=${g.n}${g.cv != null ? ` · CV ${g.cv.toFixed(1)} %` : ''}` : ''}` : '농도 입력 필요';
+    return `<td class="r q-cellc" data-qan="${escapeHtml(n)}">${val}${sub ? `<div class="q-sub">${sub}</div>` : ''}${r.fit ? qTag(g.flag) : ''}${g.ionFail ? '<span class="q-tag bad" title="확인 이온 비가 표준 평균에서 ±20 % 넘게 벗어남">이온비</span>' : ''}</td>`;
+  };
+  $('qMatMeta').textContent = `시료 ${groups.length}건 · 반복은 평균 · 내부표준 ${res.is || '없음'}`;
+  $('qMatrix').innerHTML = `<thead><tr><th>시료</th>${names.map((n) => `<th class="r">${escapeHtml(n)}</th>`).join('')}</tr></thead><tbody>${
+    groups.map((gname) => `<tr><td><b>${escapeHtml(gname)}</b></td>${names.map((n) => cell(n, gname)).join('')}</tr>`).join('') ||
+    `<tr><td colspan="${names.length + 1}" class="empty">시료 주입이 없습니다</td></tr>`}</tbody>`;
+  $('qExport').disabled = !names.some((n) => res.results[n].fit);
+
+  // 성분별 상세
+  if (!names.includes(quant.sel)) quant.sel = names.find((n) => res.results[n].detected) || names[0] || '';
+  $('qAnTabs').innerHTML = names.map((n) => `<button role="tab" aria-selected="${n === quant.sel}" class="${n === quant.sel ? 'on' : ''}" data-qsel="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join('');
+  const r = res.results[quant.sel];
+  $('qCal').hidden = !r || !r.fit;
+  if (!r) { ['qStds', 'qRuns'].forEach((id) => { $(id).innerHTML = ''; }); $('qBlank').textContent = ''; return; }
+  const yHead = res.is ? '면적비 (÷IS)' : '면적';
+  if (r.fit) {
+    const f = r.fit, used = r.stds.filter((s) => !s.excluded && s.nominal > 0).length;
+    $('qEq').innerHTML = `<div class="cap">${escapeHtml(r.name)} 검량선 (${res.is ? '면적비' : '면적'} = 기울기 × 농도 + 절편)</div>
+      <div class="eq">y = ${Quant.sig(f.slope, 6)}x ${f.intercept < 0 ? '−' : '+'} ${Quant.sig(Math.abs(f.intercept), 5)}</div>
+      <div class="q-stats"><div><div class="n">${f.r2.toFixed(5)}</div><div class="l">R²${f.r2 < 0.99 ? ' · 0.99 미만' : ''}</div></div>
+      <div><div class="n">${qFmt(r.range.lo)}–${qFmt(r.range.hi)}</div><div class="l">정량 범위 mg/L</div></div>
+      <div><div class="n">${used}</div><div class="l">사용 표준${r.ionRef != null ? ` · 이온비 ${Quant.sig(r.ionRef, 3)}` : ''}</div></div></div>`;
+    $('qPlot').innerHTML = quantPlot(r);
+  }
+  $('qStds').innerHTML = `<thead><tr><th>사용</th><th>표준</th><th class="r">이론 농도</th><th class="r">면적</th><th class="r">${yHead}</th><th class="r">역산 농도</th><th class="r">정확도</th><th>판정</th></tr></thead><tbody>${
+    r.stds.map((s) => `<tr class="${s.excluded ? 'off' : ''}"><td><input type="checkbox" data-qstd="${s.level}" ${s.excluded ? '' : 'checked'} aria-label="${escapeHtml(s.run)} 검량선에 사용"></td>
+      <td>${escapeHtml(s.run)}</td><td class="r">${s.nominal > 0 ? qFmt(s.nominal) : '–'}</td><td class="r">${qFmt(s.area)}</td><td class="r">${qFmt(s.y, 5)}</td><td class="r">${qFmt(s.calc)}</td>
+      <td class="r">${s.accuracy != null ? s.accuracy.toFixed(1) + ' %' : '–'}</td><td>${s.excluded ? '<span class="q-tag warn">제외</span>' : s.pass == null ? '' : s.pass ? '<span class="q-tag ok">적합</span>' : `<span class="q-tag bad">±${s.limit} % 초과</span>`}</td></tr>`).join('')}</tbody>`;
+  $('qRunMeta').textContent = r.qual ? `정량 이온 ${r.quant} · 확인 이온 ${r.qual} (허용 ±${Quant.ION_TOL} %)` : `정량 이온 ${r.quant}`;
+  $('qRuns').innerHTML = `<thead><tr><th>주입</th><th class="r">RT</th><th class="r">면적</th>${res.is ? '<th class="r">IS 면적</th>' : ''}<th class="r">${yHead}</th><th class="r">정량값 (mg/L)</th>${r.qual ? '<th class="r">이온비 편차</th>' : ''}<th>비고</th></tr></thead><tbody>${
+    r.samples.map((s) => `<tr><td>${escapeHtml(s.run)}</td><td class="r">${s.rt ? qFmt(s.rt, 3) : '–'}</td><td class="r">${qFmt(s.area)}</td>${res.is ? `<td class="r">${qFmt(s.isArea)}</td>` : ''}
+      <td class="r">${qFmt(s.y, 5)}</td><td class="r big">${qFmt(s.conc)}</td>${r.qual ? `<td class="r">${s.ionDev != null ? `${s.ionDev > 0 ? '+' : ''}${s.ionDev.toFixed(1)} %` : '–'}</td>` : ''}
+      <td>${qTag(s.flag)}${s.ionOk === false ? '<span class="q-tag bad">이온비</span>' : ''}</td></tr>`).join('')}</tbody>`;
+  const bl = r.blanks.filter((b) => b.area > 0);
+  $('qBlank').innerHTML = !r.blanks.length ? '' : bl.length
+    ? `블랭크 잔류: ${bl.map((b) => `${escapeHtml(b.run)} 면적 ${qFmt(b.area)}${b.pct != null ? ` (최저 표준의 ${b.pct.toFixed(2)} %)` : ''}`).join(', ')}${bl.some((b) => b.pct > 20) ? ' — <b>최저 표준의 20 % 초과, 잔류 의심</b>' : ' — 최저 표준의 20 % 이하'}`
+    : `블랭크 ${r.blanks.length}회 모두 불검출`;
+}
+$('qMap').addEventListener('change', (e) => {
+  const k = e.target.dataset.q; if (!k) return;
+  const v = e.target.value;
+  if (k === 'sheet') Object.assign(quant, { sheet: Number(v), exclude: {} }, Quant.guessColumns(quant.sheets[Number(v)].rows));
+  else if (k === 'header') Object.assign(quant, { exclude: {} }, Quant.guessColumns(qRows(), Number(v)));
+  else if (k === 'weighting') quant.weighting = v;
+  else if (k === 'is') quant.is = v;
+  else quant.map[k.slice(4)] = Number(v);
+  quantSave(); renderQuant();
+});
+$('qConc').addEventListener('change', (e) => {
+  const t = e.target, v = t.value.trim().replace(/,/g, ''), val = v === '' ? undefined : Quant.num(v);
+  if (v !== '' && val == null) { toast('숫자로 입력해 주세요'); t.value = ''; return; }
+  const set = (an, l) => { qConc[an] = { ...(qConc[an] || {}), [l]: val }; if (val === undefined) delete qConc[an][l]; };
+  if (t.dataset.qall) Object.keys(quantRes.results).forEach((an) => set(an, t.dataset.qall));
+  else if (t.dataset.qc) set(t.dataset.qc, t.dataset.lv);
+  else return;
+  quantSave(); renderQuant();
+});
+$('qStds').addEventListener('change', (e) => {
+  const lv = Number(e.target.dataset.qstd); if (!lv) return;
+  const cur = quant.exclude[quant.sel] || [];
+  quant.exclude[quant.sel] = e.target.checked ? cur.filter((x) => x !== lv) : [...new Set([...cur, lv])];
+  quantSave(); renderQuant();
+});
+$('qAnTabs').addEventListener('click', (e) => { const b = e.target.closest('[data-qsel]'); if (b) { quant.sel = b.dataset.qsel; quantSave(); renderQuant(); } });
+$('qMatrix').addEventListener('click', (e) => {
+  const c = e.target.closest('[data-qan]'); if (!c) return;
+  quant.sel = c.dataset.qan; quantSave(); renderQuant();
+  $('qAnTabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+$('qUpload').onclick = () => $('qInput').click();
+$('qInput').onchange = (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) quantLoad(f); };
+$('qExport').onclick = () => {
+  if (!quantRes) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([Quant.resultCsv(quantRes)], { type: 'text/csv;charset=utf-8' }));
+  a.download = `${(quant.file || '정량').replace(/\.[^.]+$/, '')}_정량결과.csv`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+// 끌어다 놓기: 탭 어디에 놓아도 받는다
+['dragenter', 'dragover'].forEach((t) => $('quantView').addEventListener(t, (e) => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { e.preventDefault(); $('qDrop').classList.add('over'); } }));
+['dragleave', 'drop'].forEach((t) => $('quantView').addEventListener(t, () => $('qDrop').classList.remove('over')));
+$('quantView').addEventListener('drop', (e) => { const f = e.dataTransfer?.files?.[0]; if (f) { e.preventDefault(); quantLoad(f); } });
+// 에이전트에게 보여 줄 요약(pageLocation) — 대화로 "이 결과 해석해 줘"라고 할 때 무엇을 보는지 안다
+function quantSummary() {
+  if (!quant || !quantRes) return 'drug quant tab: no file loaded';
+  const parts = Object.values(quantRes.results).map((r) => !r.fit ? `${r.name}: ${r.detected ? 'no calibration (enter STD conc)' : 'not detected'}`
+    : `${r.name}: y=${Quant.sig(r.fit.slope, 5)}x${r.fit.intercept < 0 ? '' : '+'}${Quant.sig(r.fit.intercept, 4)} R²=${r.fit.r2.toFixed(4)} range ${r.range.lo}–${r.range.hi}; ${r.groups.map((g) => `${g.name}=${g.mean != null ? qFmt(g.mean) : g.flag}${g.mean != null && g.flag ? ' ' + g.flag : ''}`).join(', ')}`);
+  return `drug quant file "${quant.file}", IS ${quantRes.is || 'none'}, weighting ${quantRes.weighting}, mg/L — ${parts.join(' | ')}`;
+}
+renderQuant();
 </script>
 </body>
 </html>
