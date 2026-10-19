@@ -1,6 +1,6 @@
 'use strict';
 // dashboard-api.js — 대시보드 상태 API (채널 코어 위에 얹힌 계층).
-// 담당: /api/state · /api/agent(제안) · /api/approve · /api/apply · /api/done · /api/note · /api/link · /api/graph/* · /api/evolve · /api/evolve-act · /api/requests · /api/request-act
+// 담당: /api/state · /api/quant(약물 정량 이력·세트) · /api/agent(제안) · /api/approve · /api/apply · /api/done · /api/note · /api/link · /api/graph/* · /api/evolve · /api/evolve-act · /api/requests · /api/request-act
 //       + /api/notifications(pull 통지 조회)
 //
 // 검증 하네스 반영(2026-08-19):
@@ -1278,6 +1278,85 @@ function createDashboardApi(core, opts) {
       saveUpdates(u); audit(actor(req), `update.${body.action}`, it.title.slice(0, 80));
       broadcast({ kind: 'updates', version: u.version });
       return sendJson(res, 200, { ok: true, status: it.status, item: it, upstreamDir: UPSTREAM_DIR }), true;
+    }
+
+    // ---- 약물 정량(워크스페이스 › 약물 정량): 분석 이력 + 검량 세트(방법) ----
+    // 워크스페이스마다 quant.json — { next, runs: [{ id, at, updatedAt, by, file, sheet, rows, settings, re, summary }], methods: [{ name, is, weighting, conc }] }
+    // 계산은 브라우저(quant.js)가 하고, 서버는 원본 표·설정·요약을 보관한다(다른 기기·사람·에이전트가 같은 결과를 본다).
+    // 에이전트: GET /api/quant (이력 요약·세트), GET /api/quant/run?id=N (원본 표·설정·성분별 결과 요약)
+    if (p === '/api/quant' || p === '/api/quant/run') {
+      const QFILE = path.join(path.dirname(dataFileOf(curWs())), 'quant.json');
+      const load = () => { const q = readJsonStrict(QFILE, () => ({ next: 1, runs: [], methods: [] })); return q && Array.isArray(q.runs) ? { methods: [], ...q } : { next: 1, runs: [], methods: [] }; };
+      const save = (q) => { q.version = (q.version || 1) + 1; writeJsonAtomic(QFILE, q); broadcast({ kind: 'quant', version: q.version }); };
+      const cut = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+      const listOf = (q) => q.runs.map(({ id, at, updatedAt, by, file, settings = {}, re, summary = {} }) => ({ id, at, updatedAt, by, file, reFile: re ? re.file : '',
+        method: settings.method || '', is: summary.is ?? settings.is ?? '', weighting: summary.weighting || settings.weighting || '', groups: summary.groups || [], analytes: Object.keys(summary.results || {}),
+        flags: summary.flags || [], qc: summary.qc || null })).reverse();
+      const q = load();
+      if (req.method === 'GET') {
+        if (p === '/api/quant') return sendJson(res, 200, { runs: listOf(q), methods: q.methods }), true;
+        const r = q.runs.find((x) => x.id === Number(url.searchParams.get('id')));
+        return r ? (sendJson(res, 200, { run: r }), true) : (sendJson(res, 404, { error: 'no such run' }), true);
+      }
+      if (req.method !== 'POST' || p !== '/api/quant') return sendJson(res, 405, { error: 'method not allowed' }), true;
+      if (!csrfOk(req)) return sendJson(res, 403, { error: 'forbidden (origin/content-type)' }), true;
+      const body = await jsonBody(req, res, 8 * 1024 * 1024); if (!body) return true;
+      const okRows = (rows) => Array.isArray(rows) && rows.length <= 50000 && rows.every((r) => Array.isArray(r) && r.length <= 200);
+      const obj = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v : {});
+      const now = new Date().toISOString(), by = actor(req);
+      if (body.action === 'save') {
+        if (!okRows(body.rows)) return sendJson(res, 400, { error: 'rows must be an array of rows' }), true;
+        const r = { id: q.next++, at: now, updatedAt: now, by, file: cut(body.file, 200) || 'file', sheet: cut(body.sheet, 100), rows: body.rows, settings: obj(body.settings), re: null, summary: obj(body.summary) };
+        q.runs.push(r);
+        if (q.runs.length > 200) q.runs.splice(0, q.runs.length - 200);   // 오래된 것부터 정리
+        audit(by, 'quant.save', `#${r.id} ${r.file}`); save(q);
+        return sendJson(res, 200, { ok: true, id: r.id }), true;
+      }
+      if (body.action === 'update' || body.action === 'delete') {
+        const i = q.runs.findIndex((x) => x.id === Number(body.id));
+        if (i < 0) return sendJson(res, 404, { error: 'no such run' }), true;
+        if (body.action === 'delete') { const [r] = q.runs.splice(i, 1); audit(by, 'quant.delete', `#${r.id} ${r.file}`); save(q); return sendJson(res, 200, { ok: true }), true; }
+        const r = q.runs[i];
+        if ('rows' in body) { if (!okRows(body.rows)) return sendJson(res, 400, { error: 'rows must be an array of rows' }), true; r.rows = body.rows; r.sheet = cut(body.sheet, 100); }
+        if ('settings' in body) r.settings = obj(body.settings);
+        if ('summary' in body) r.summary = obj(body.summary);
+        if ('re' in body) {
+          if (body.re === null) r.re = null;
+          else { const re = obj(body.re); if (!okRows(re.rows)) return sendJson(res, 400, { error: 're.rows must be an array of rows' }), true; r.re = { file: cut(re.file, 200) || 'file', sheet: cut(re.sheet, 100), rows: re.rows, settings: obj(re.settings), at: re.at || now }; }
+        }
+        r.updatedAt = now; save(q);
+        return sendJson(res, 200, { ok: true, id: r.id }), true;
+      }
+      if (body.action === 'method-save') {
+        const name = cut(body.name, 80); if (!name) return sendJson(res, 400, { error: 'name required' }), true;
+        const conc = {};
+        for (const [an, lv] of Object.entries(obj(body.conc)).slice(0, 100)) {
+          const m = {}; for (const [l, v] of Object.entries(obj(lv)).slice(0, 30)) { const n = Number(v); if (/^\d{1,3}$/.test(l) && Number.isFinite(n) && n > 0) m[l] = n; }
+          if (Object.keys(m).length) conc[cut(an, 100)] = m;
+        }
+        const base = {}, scale = {};   // 기본 농도(수준별) · 성분별 배율(×1, ×1/10 … 또는 'custom')
+        for (const [l, v] of Object.entries(obj(body.base)).slice(0, 30)) { const n = Number(v); if (/^\d{1,3}$/.test(l) && Number.isFinite(n) && n > 0) base[l] = n; }
+        for (const [an, v] of Object.entries(obj(body.scale)).slice(0, 100)) { const n = Number(v); if (v === 'custom' || (Number.isFinite(n) && n > 0)) scale[cut(an, 100)] = v === 'custom' ? 'custom' : String(n); }
+        const specimens = {};   // 검체 코드별 { name, unit: 'mg/L'|'mg/kg', factor(균질화 배수) }
+        for (const [code, v] of Object.entries(obj(body.specimens)).slice(0, 30)) {
+          if (!/^[A-Za-z]{0,4}$/.test(code)) continue;
+          const o = obj(v), sp = {}, f = Number(o.factor);
+          if (o.name) sp.name = cut(o.name, 30);
+          if (o.unit === 'mg/L' || o.unit === 'mg/kg') sp.unit = o.unit;
+          if (Number.isFinite(f) && f > 0) sp.factor = f;
+          specimens[code.toUpperCase()] = sp;
+        }
+        const m = { name, is: cut(body.is, 100), weighting: ['none', '1/x', '1/x2'].includes(body.weighting) ? body.weighting : '1/x', base, scale, conc, specimens, updatedAt: now, by };
+        const j = q.methods.findIndex((x) => x.name === name);
+        if (j >= 0) q.methods[j] = m; else q.methods.push(m);
+        audit(by, 'quant.method', name); save(q);
+        return sendJson(res, 200, { ok: true, methods: q.methods }), true;
+      }
+      if (body.action === 'method-delete') {
+        q.methods = q.methods.filter((x) => x.name !== cut(body.name, 80)); save(q);
+        return sendJson(res, 200, { ok: true, methods: q.methods }), true;
+      }
+      return sendJson(res, 400, { error: 'unknown action' }), true;
     }
 
     // ---- 요구사항(Requirements): 사용자가 적고, 에이전트가 반영 여부·방법·안 된 이유를 분석 ----

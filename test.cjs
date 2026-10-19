@@ -1045,6 +1045,30 @@ async function integration() {
       assert.equal(ab.host, `127.0.0.1:${new URL(api).port}`, '에이전트 지시문 주소는 브라우저 주소가 아니라 서버의 로컬 주소');
     });
 
+    await ta('C19 약물 정량 이력·검량 세트(/api/quant): 저장→목록 요약→원본·설정 다시 열기→갱신(재분석 포함)→삭제, 세트 저장·덮어쓰기·삭제', async () => {
+      let r = await post('/api/quant', { action: 'save', file: 'a.xlsx', rows: 'nope' }); assert.equal(r.status, 400);
+      const rows = [['SA', 'Analyte', 'Area'], ['STD1', 'Drug 1', 100]];
+      const sum = { is: 'IS-d3', weighting: '1/x', groups: ['P'], results: { Drug: { groups: { P: { mean: 1.5, flag: '' } } } }, flags: ['P Drug ULOQ 초과'], qc: { pass: false, fails: 1 } };
+      const id = (await (await post('/api/quant', { action: 'save', file: 'a.xlsx', sheet: 'Sheet1', rows, settings: { weighting: '1/x', method: 'M1' }, summary: sum })).json()).id;
+      let j = await (await fetch(`${api}/api/quant`)).json();
+      assert.deepEqual(j.runs.map((x) => [x.id, x.file, x.method, x.is, x.weighting, x.flags.length, x.qc.fails]), [[id, 'a.xlsx', 'M1', 'IS-d3', '1/x', 1, 1]]);
+      assert.equal(j.runs[0].rows, undefined, '목록에는 원본 표를 싣지 않는다');
+      j = await (await fetch(`${api}/api/quant/run?id=${id}`)).json(); assert.deepEqual(j.run.rows, rows); assert.equal(j.run.settings.method, 'M1');
+      r = await post('/api/quant', { action: 'update', id, re: { file: 'b.xlsx', rows, settings: { dil: { P: 10 } } }, summary: { ...sum, qc: { pass: true, fails: 0 } } }); assert.equal(r.status, 200);
+      j = await (await fetch(`${api}/api/quant`)).json(); assert.equal(j.runs[0].reFile, 'b.xlsx'); assert.equal(j.runs[0].qc.pass, true);
+      assert.equal((await post('/api/quant', { action: 'update', id: 999 })).status, 404);
+      j = await (await post('/api/quant', { action: 'method-save', name: '패널 0.1–2', is: 'IS-d3', weighting: '1/x', base: { 1: 0.1, 2: 0.2, x: 3 }, scale: { Flu: '0.1', Bad: -1, Q: 'custom' }, conc: { Flu: { 1: 0.01, 2: 0.02, 3: 'x' } } })).json();
+      assert.deepEqual(j.methods.map((m) => [m.name, m.base, m.scale, m.conc]), [['패널 0.1–2', { 1: 0.1, 2: 0.2 }, { Flu: '0.1', Q: 'custom' }, { Flu: { 1: 0.01, 2: 0.02 } }]]);
+      j = await (await post('/api/quant', { action: 'method-save', name: '간 포함', specimens: { lv: { name: '간', unit: 'mg/kg', factor: '5' }, HB: { unit: 'x', factor: -1 }, 'bad code!': {} } })).json();
+      assert.deepEqual(j.methods.find((m) => m.name === '간 포함').specimens, { LV: { name: '간', unit: 'mg/kg', factor: 5 }, HB: {} }, '검체 설정: 코드 대문자·단위/배수 검증');
+      await post('/api/quant', { action: 'method-delete', name: '간 포함' });
+      j = await (await post('/api/quant', { action: 'method-save', name: '패널 0.1–2', weighting: 'bogus' })).json();
+      assert.equal(j.methods.length, 1, '같은 이름은 덮어쓴다'); assert.equal(j.methods[0].weighting, '1/x');
+      j = await (await post('/api/quant', { action: 'method-delete', name: '패널 0.1–2' })).json(); assert.deepEqual(j.methods, []);
+      await post('/api/quant', { action: 'delete', id });
+      assert.deepEqual((await (await fetch(`${api}/api/quant`)).json()).runs, []);
+    });
+
     await ta('C17 요구사항(Requirements): 추가·수정(분석 낡음 표시)·삭제, 분석 작업→결과(상태 검증)·한 번에 하나', async () => {
       let r = await post('/api/requirements', { action: 'add', title: '' }); assert.equal(r.status, 400);
       const a1 = (await (await post('/api/requirements', { action: 'add', title: 'Show overdue tasks first', detail: 'At the top of Tasks' })).json()).item;
